@@ -24,17 +24,21 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-int timeOut = 10;
+int timeOut = 30;
 int renderTimer;
 int hookTimer;
 Hook hook;
+Levels currentLevel;
+list<Mineral> minerals;
 
 
 void init(HWND hWnd)
 {
-	hook = Hook(0.5, 0.1, 180);
+	currentLevel = One;
+	minerals = LevelGenerator::getMinerals(currentLevel);
+	hook = Hook(0.5, 0.1);
 	renderTimer = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
-	hookTimer = SetTimer(hWnd, HOOK_TIMER, 10, NULL);
+	hookTimer = SetTimer(hWnd, HOOK_TIMER, 30, NULL);
 
 }
 
@@ -100,7 +104,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // —охранить дескриптор экземпл€ра в глобальной переменной
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+	   CW_USEDEFAULT, CW_USEDEFAULT, WIDTH, HEIGHT, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -153,7 +157,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
-		Renderer::render(hWnd, hook);
+		Renderer::render(hWnd, hook, minerals);
         }
         break;
     case WM_DESTROY:

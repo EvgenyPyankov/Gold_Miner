@@ -8,11 +8,14 @@ using namespace std;
 
 Hook::Hook() {}
 
-Hook::Hook(double x, double y, double angle)
+Hook::Hook(double x, double y)
 {
+	this->x0 = x;
 	this->x = x;
-	this->y = y;
-	this->angle = angle;
+	this->y = y + LENGTH;
+	this->y0 = y;
+	this->angle = DEFAULT_ANGLE;
+	direction = 1;
 	hookState = Aiming;
 }
 
@@ -26,16 +29,33 @@ double Hook::getY()
 	return y;
 }
 
+double Hook::getRadius()
+{
+	return RADIUS;
+}
+
+
 void Hook::calculatePosition()
 {
 	switch (hookState)
 	{
 	case Aiming:
 	{
-		x = 0.5;
-		y = 0.1;
-		calculate(0.1);
-		angle += 2.5;
+		x = x0;
+		y = y0;
+		angle += ANGLE_STEP*direction;
+		if (angle > MAX_ANGLE)
+		{
+			angle = MAX_ANGLE;
+			direction *= -1;
+		}
+		else 
+			if (angle < MIN_ANGLE)
+			{
+				angle = MIN_ANGLE;
+				direction *= -1;
+			}
+		calculate(LENGTH);
 	}
 	case Forward:
 	{
@@ -47,9 +67,11 @@ void Hook::calculatePosition()
 
 void Hook::calculate(double c)
 {
+
 	double ang = 270 - angle;
-	y += c * cos(ang * PI / 180);
-	double buf = c*sin(ang*PI / 180);
+	double absAng = abs(ang);
+	y += c * cos(absAng * PI / 180);
+	double buf = c*sin(absAng*PI / 180);
 	if (ang < 0)
 		x -= buf;
 	else

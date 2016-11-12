@@ -8,9 +8,10 @@ class Hook
 {
 public:
 	Hook();
-	Hook(double x, double y, double angle);
+	Hook(double x, double y);
 	double getX();
 	double getY();
+	double getRadius();
 	void calculatePosition();
 	HookStates getHookState();
 	void pullHook();
@@ -20,6 +21,15 @@ public:
 
 
 private:
+	int direction;
+	double ANGLE_STEP = 2.5;
+	int DEFAULT_ANGLE = 270;
+	int MIN_ANGLE = 190;
+	int MAX_ANGLE = 350;
+	double RADIUS = 0.02;
+	double LENGTH = 0.1;
+	double x0;
+	double y0;
 	double x;
 	double y;
 	double angle;
