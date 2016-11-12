@@ -2,11 +2,11 @@
 #include "Mineral.h"
 
 
-Mineral::Mineral(double x, double y, double d, MineralTypes type)
+Mineral::Mineral(double x, double y, double r, MineralTypes type)
 {
 	this->x = x;
 	this->y = y;
-	this->d = d;
+	this->r = r;
 	this->type = type;
 }
 
@@ -19,9 +19,9 @@ double Mineral::getY()
 	return y;
 }
 
-double Mineral::getD()
+double Mineral::getR()
 {
-	return d;
+	return r;
 }
 
 MineralTypes Mineral::getType() {

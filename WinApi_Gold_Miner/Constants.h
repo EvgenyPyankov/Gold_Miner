@@ -24,8 +24,8 @@ namespace Constants {
 		Backward
 	};
 
-	const int WIDTH = 600;
-	const int HEIGHT = 400;
+	const int WIDTH = 1200;
+	const int HEIGHT = 1000;
 
 	const int LEVEL_TIME = 30;
 

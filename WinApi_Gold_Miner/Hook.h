@@ -23,11 +23,12 @@ public:
 private:
 	int direction;
 	double ANGLE_STEP = 2.5;
-	int DEFAULT_ANGLE = 270;
+	int DEFAULT_ANGLE = 300;
 	int MIN_ANGLE = 190;
 	int MAX_ANGLE = 350;
+	double SPEED = 0.05;
 	double RADIUS = 0.02;
-	double LENGTH = 0.1;
+	double LENGTH = 0.05;
 	double x0;
 	double y0;
 	double x;

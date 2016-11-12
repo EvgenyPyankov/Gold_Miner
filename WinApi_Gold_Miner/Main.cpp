@@ -23,6 +23,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+bool detectCollision();
 
 int timeOut = 30;
 int renderTimer;
@@ -36,7 +37,7 @@ void init(HWND hWnd)
 {
 	currentLevel = One;
 	minerals = LevelGenerator::getMinerals(currentLevel);
-	hook = Hook(0.5, 0.1);
+	hook = Hook(0.5, 0.0);
 	renderTimer = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
 	hookTimer = SetTimer(hWnd, HOOK_TIMER, 30, NULL);
 
@@ -119,6 +120,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+bool detectCollision()
+{
+	double xHook = hook.getX();
+	double yHook = hook.getY();
+	for (Mineral mineral : minerals) {
+		double x = xHook - mineral.getX();
+		double y = yHook - mineral.getY();
+		if ((x*x + y*y) < mineral.getR()*mineral.getR()) {
+			return true;
+		}
+
+	}
+	return false;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -134,6 +150,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		case HOOK_TIMER:
 			hook.calculatePosition();
+			if (detectCollision())
+			{
+				//hook.hookState = Backward;
+				KillTimer(hWnd, hookTimer);
+			};
 			return 0;
 
 		}
@@ -160,6 +181,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Renderer::render(hWnd, hook, minerals);
         }
         break;
+	case WM_KEYDOWN:
+	{
+		switch (wParam) {
+		case VK_SPACE:
+
+			break;
+		case VK_LEFT:
+
+			break;
+		case VK_RIGHT:
+
+			break;
+		case VK_UP:
+
+			break;
+		case VK_DOWN:
+			hook.pullHook();
+			break;
+		}
+	}
+	break;
     case WM_DESTROY:
 		KillTimer(hWnd, renderTimer);
 		KillTimer(hWnd, hookTimer);

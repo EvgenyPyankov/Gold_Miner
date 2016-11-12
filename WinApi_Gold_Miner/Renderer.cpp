@@ -58,10 +58,10 @@ void Renderer::drawHook(HDC hdc, Hook hook)
 
 void Renderer::drawMineral(HDC hdc, Mineral mineral)
 {
-	int diameter = Converter::getLength(mineral.getD());
-	int x = Converter::getX(mineral.getX());
-	int y = Converter::getY(mineral.getY());
-	Ellipse(hdc, x, y, x + diameter, y + diameter);
+	int radius = Converter::getLength(mineral.getR());
+	int x = Converter::getX(mineral.getX())-radius;
+	int y = Converter::getY(mineral.getY()) - radius;
+	Ellipse(hdc, x, y, x + radius*2, y + radius*2);
 }
 
 

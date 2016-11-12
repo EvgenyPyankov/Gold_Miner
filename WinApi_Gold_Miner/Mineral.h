@@ -10,12 +10,12 @@ class Mineral
 private:
 	double x;
 	double y;
-	double d;
+	double r;
 	MineralTypes type;
 public:
 	Mineral(double, double, double, MineralTypes);
 	double getX();
 	double getY();
-	double getD();
+	double getR();
 	MineralTypes getType();
 };

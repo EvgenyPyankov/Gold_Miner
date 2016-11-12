@@ -57,10 +57,19 @@ void Hook::calculatePosition()
 			}
 		calculate(LENGTH);
 	}
+	break;
 	case Forward:
 	{
-		//calculate(0.02);
+		calculate(SPEED);
+		if (x > WIDTH || x<0 || y>HEIGHT || y < 0)
+			hookState = Backward;
 	}
+	break;
+	case Backward:
+	{
+		
+	}
+	break;
 	}
 
 }
@@ -73,9 +82,9 @@ void Hook::calculate(double c)
 	y += c * cos(absAng * PI / 180);
 	double buf = c*sin(absAng*PI / 180);
 	if (ang < 0)
-		x -= buf;
-	else
 		x += buf;
+	else
+		x -= buf;
 }
 
 
