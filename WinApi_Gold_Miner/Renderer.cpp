@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "Renderer.h"
+#include "Converter.h"
 
-Renderer::Renderer(void)
-{
-}
 
-void Renderer::render(HWND hWnd)
+void Renderer::render(HWND hWnd, Hook hook)
 {
 	HBITMAP hScreen, oldBmp;
 	PAINTSTRUCT ps;
@@ -22,7 +20,7 @@ void Renderer::render(HWND hWnd)
 	HBRUSH brush = CreateSolidBrush(RGB(40, 200, 80));
 	FillRect(cdc, &ps.rcPaint, brush);
 
-
+	drawHook(cdc, hook);
 
 	// копирование из буфера в видимый контекст
 	BitBlt(hdc, 0, 0, rect.right, rect.bottom, cdc, 0, 0, SRCCOPY);
@@ -34,8 +32,15 @@ void Renderer::render(HWND hWnd)
 	EndPaint(hWnd, &ps);
 }
 
-
-
-Renderer::~Renderer(void)
+void Renderer::drawHook(HDC hdc, Hook hook)
 {
+	HPEN hPen = CreatePen(PS_SOLID, 1, NULL);
+	SelectObject(hdc, hPen);
+	int x = Converter::getX(hook.getX());
+	int y = Converter::getY(hook.getY());
+	Ellipse(hdc, x, y, x + 15, y + 15);
+	DeleteObject(hPen);
 }
+
+
+

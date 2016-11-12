@@ -1,20 +1,22 @@
-// WinApi_Gold_Miner.cpp: определяет точку входа для приложения.
-//
-
 #include "stdafx.h"
-#include "WinApi_Gold_Miner.h"
+#include "Main.h"
 #include "Renderer.h"
-#include <windows.h>
+
+#include "Mineral.h"
+#include "LevelGenerator.h"
+#include "Constants.h"
+#include "Converter.h"
+#include "Hook.h"
+#include <list>
 
 #define MAX_LOADSTRING 100
 #define LEVEL_TIMER 1
 #define HOOK_TIMER 2
 #define RENDER_TIMER 3
 
-// Глобальные переменные:
-HINSTANCE hInst;                                // текущий экземпляр
-WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
-WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
+HINSTANCE hInst;                              
+WCHAR szTitle[MAX_LOADSTRING];                 
+WCHAR szWindowClass[MAX_LOADSTRING];            
 
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -22,14 +24,17 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-int timeOut = 50;
-int timerId;
+int timeOut = 10;
+int renderTimer;
+int hookTimer;
+Hook hook;
 
 
 void init(HWND hWnd)
 {
-
-	timerId = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
+	hook = Hook(0.5, 0.1, 180);
+	renderTimer = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
+	hookTimer = SetTimer(hWnd, HOOK_TIMER, 10, NULL);
 
 }
 
@@ -41,14 +46,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: разместите код здесь.
-
-    // Инициализация глобальных строк
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_WINAPI_GOLD_MINER, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
-    // Выполнить инициализацию приложения:
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
@@ -128,6 +129,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case LEVEL_TIMER:
 			return 0;
 		case HOOK_TIMER:
+			hook.calculatePosition();
 			return 0;
 
 		}
@@ -136,7 +138,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
-            // Разобрать выбор в меню:
             switch (wmId)
             {
             case IDM_ABOUT:
@@ -152,11 +153,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
-		Renderer::render(hWnd);
+		Renderer::render(hWnd, hook);
         }
         break;
     case WM_DESTROY:
-		KillTimer(hWnd, timerId);
+		KillTimer(hWnd, renderTimer);
+		KillTimer(hWnd, hookTimer);
         PostQuitMessage(0);
         break;
     default:
