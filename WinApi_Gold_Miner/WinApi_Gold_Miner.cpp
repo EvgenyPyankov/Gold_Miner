@@ -3,8 +3,13 @@
 
 #include "stdafx.h"
 #include "WinApi_Gold_Miner.h"
+#include "Renderer.h"
+#include <windows.h>
 
 #define MAX_LOADSTRING 100
+#define LEVEL_TIMER 1
+#define HOOK_TIMER 2
+#define RENDER_TIMER 3
 
 // Глобальные переменные:
 HINSTANCE hInst;                                // текущий экземпляр
@@ -16,6 +21,17 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+int timeOut = 50;
+int timerId;
+
+
+void init(HWND hWnd)
+{
+
+	timerId = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
+
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -42,7 +58,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    // Цикл основного сообщения:
+
+
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -56,12 +73,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
-
-//
-//  ФУНКЦИЯ: MyRegisterClass()
-//
-//  НАЗНАЧЕНИЕ: регистрирует класс окна.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
@@ -83,16 +94,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-//
-//   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
-//
-//   НАЗНАЧЕНИЕ: сохраняет обработку экземпляра и создает главное окно.
-//
-//   КОММЕНТАРИИ:
-//
-//        В данной функции дескриптор экземпляра сохраняется в глобальной переменной, а также
-//        создается и выводится на экран главное окно программы.
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Сохранить дескриптор экземпляра в глобальной переменной
@@ -105,26 +106,33 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   init(hWnd);
+
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
    return TRUE;
 }
 
-//
-//  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  НАЗНАЧЕНИЕ:  обрабатывает сообщения в главном окне.
-//
-//  WM_COMMAND — обработать меню приложения
-//  WM_PAINT — отрисовать главное окно
-//  WM_DESTROY — отправить сообщение о выходе и вернуться
-//
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+	case WM_TIMER:
+	{
+		switch (wParam)
+		{
+		case RENDER_TIMER:
+			InvalidateRect(hWnd, NULL, false);
+			return 0;
+		case LEVEL_TIMER:
+			return 0;
+		case HOOK_TIMER:
+			return 0;
+
+		}
+		break;
+	}
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -144,13 +152,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-            EndPaint(hWnd, &ps);
+		Renderer::render(hWnd);
         }
         break;
     case WM_DESTROY:
+		KillTimer(hWnd, timerId);
         PostQuitMessage(0);
         break;
     default:
@@ -158,6 +164,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
+
+
 
 // Обработчик сообщений для окна "О программе".
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
