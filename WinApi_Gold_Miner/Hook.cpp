@@ -34,6 +34,12 @@ double Hook::getRadius()
 	return RADIUS;
 }
 
+void Hook::grabMineral(Mineral* mineral)
+{
+	this->mineral = mineral;
+	hookState = Backward;
+}
+
 
 void Hook::calculatePosition()
 {
@@ -61,13 +67,20 @@ void Hook::calculatePosition()
 	case Forward:
 	{
 		calculate(SPEED);
-		if (x > WIDTH || x<0 || y>HEIGHT || y < 0)
+		if (x > 1 || x<0 || y>1 || y < 0)
 			hookState = Backward;
 	}
 	break;
 	case Backward:
 	{
-		
+		calculate(SPEED);
+		if (mineral != NULL){
+			mineral->setX(0);
+			mineral->setY(0);
+		}
+		if (x < 0 || y < 0) {
+			hookState = Aiming;
+		}
 	}
 	break;
 	}
@@ -79,8 +92,13 @@ void Hook::calculate(double c)
 
 	double ang = 270 - angle;
 	double absAng = abs(ang);
-	y += c * cos(absAng * PI / 180);
+	double tmp = c * cos(absAng * PI / 180);
+	if (hookState == Backward)
+		y -= tmp;
+	else y += tmp;
 	double buf = c*sin(absAng*PI / 180);
+	if (hookState == Backward)
+		buf *= -1;
 	if (ang < 0)
 		x += buf;
 	else

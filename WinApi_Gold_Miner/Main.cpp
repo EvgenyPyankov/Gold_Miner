@@ -23,7 +23,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-bool detectCollision();
+Mineral* detectCollision();
 
 int timeOut = 30;
 int renderTimer;
@@ -120,7 +120,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-bool detectCollision()
+Mineral* detectCollision()
 {
 	double xHook = hook.getX();
 	double yHook = hook.getY();
@@ -128,11 +128,11 @@ bool detectCollision()
 		double x = xHook - mineral.getX();
 		double y = yHook - mineral.getY();
 		if ((x*x + y*y) < mineral.getR()*mineral.getR()) {
-			return true;
+			return &mineral;
 		}
 
 	}
-	return false;
+	return NULL;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -150,11 +150,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		case HOOK_TIMER:
 			hook.calculatePosition();
-			if (detectCollision())
-			{
+		
 				//hook.hookState = Backward;
-				KillTimer(hWnd, hookTimer);
-			};
+				Mineral* mineral = detectCollision();
+				if (mineral != NULL) {
+					hook.grabMineral(mineral);
+					//KillTimer(hWnd, hookTimer);
+				}
+				
 			return 0;
 
 		}

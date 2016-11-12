@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Constants.h"
+#include "Mineral.h"
 
 using namespace Constants;
 
@@ -15,6 +16,7 @@ public:
 	void calculatePosition();
 	HookStates getHookState();
 	void pullHook();
+	void grabMineral(Mineral* mineral);
 
 	//void setX(double x);
 	//void setY(double y);
@@ -27,7 +29,7 @@ private:
 	int MIN_ANGLE = 190;
 	int MAX_ANGLE = 350;
 	double SPEED = 0.05;
-	double RADIUS = 0.02;
+	double RADIUS = 0.01;
 	double LENGTH = 0.05;
 	double x0;
 	double y0;
@@ -36,6 +38,7 @@ private:
 	double angle;
 	HookStates hookState;
 	void calculate(double c);
+	Mineral* mineral;
 };
 
 #pragma once
