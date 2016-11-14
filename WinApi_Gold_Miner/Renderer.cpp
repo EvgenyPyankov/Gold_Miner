@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals)
+void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals, int timeLeft, int score)
 {
 	//AllocConsole();
 	freopen("CONIN$", "r", stdin);
@@ -25,7 +25,7 @@ void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals)
 	HBRUSH brush = CreateSolidBrush(RGB(40, 200, 80));
 	FillRect(cdc, &ps.rcPaint, brush);
 
-	
+	drawInfo(cdc, timeLeft, score);
 	for (Mineral mineral : minerals) {
 		//int buf = mineral.getX();
 		//char buffer[10];
@@ -54,6 +54,35 @@ void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals)
 	DeleteDC(cdc);
 	EndPaint(hWnd, &ps);
 }
+
+//[]WCHAR Renderer::convertToText(int number)
+//{
+//	WCHAR  buffer[100];
+//	wsprintf(buffer, TEXT("vaue = %d"), number);
+//	return buffer;
+//}
+
+
+void Renderer::drawNumber(HDC hdc, double x, double y, int number)
+{
+	int x0 = Converter::getX(x);
+	int y0 = Converter::getY(y);
+	WCHAR  buffer[100];
+	wsprintf(buffer, TEXT("vaue = %d"), number);
+	TextOut(hdc, x0, y0, buffer, lstrlen(buffer));
+
+}
+
+
+void Renderer::drawInfo(HDC hdc, int timeLeft, int score)
+{
+	/*WCHAR  hah[100];
+	wsprintf(hah, TEXT("vaue = %d"), score);
+	TextOut(hdc, 0.01, 0.01, hah, lstrlen(hah));*/
+	drawNumber(hdc, 0.01, 0.01, timeLeft);
+	drawNumber(hdc, 0.01, 0.05, score);
+}
+
 
 void Renderer::drawHook(HDC hdc, Hook hook)
 {

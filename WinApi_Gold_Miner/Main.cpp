@@ -28,10 +28,13 @@ int detectCollision();
 int timeOut = 30;
 int renderTimer;
 int hookTimer;
+int levelTimer;
 Hook hook;
 Levels currentLevel;
 vector<Mineral> minerals;
 int mineral;
+int timeLeft;
+int score;
 
 
 void init(HWND hWnd)
@@ -41,7 +44,10 @@ void init(HWND hWnd)
 	hook = Hook(0.5, 0.0);
 	renderTimer = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
 	hookTimer = SetTimer(hWnd, HOOK_TIMER, 30, NULL);
+	levelTimer = SetTimer(hWnd, LEVEL_TIMER, 1000, NULL);
 	mineral = -1;
+	timeLeft = LEVEL_TIME;
+	score = 0;
 
 }
 
@@ -160,6 +166,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, false);
 			return 0;
 		case LEVEL_TIMER:
+			timeLeft--;
 			return 0;
 		case HOOK_TIMER:
 			hook.calculatePosition();
@@ -205,7 +212,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
-		Renderer::render(hWnd, hook, minerals);
+		Renderer::render(hWnd, hook, minerals, timeLeft, score);
         }
         break;
 	case WM_KEYDOWN:
@@ -232,6 +239,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
 		KillTimer(hWnd, renderTimer);
 		KillTimer(hWnd, hookTimer);
+		KillTimer(hWnd, levelTimer);
         PostQuitMessage(0);
         break;
     default:

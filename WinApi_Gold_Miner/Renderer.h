@@ -12,9 +12,12 @@ class Renderer
 private:
 	void static drawHook(HDC hdc, Hook hook);
 	void static drawMineral(HDC hdc, Mineral mineral);
+	void static drawInfo(HDC hdc, int timeLeft, int score);
+	void static drawNumber(HDC hdc, double x, double y, int number);
+	//WCHAR static convertToText(int number);
 
 public:
 	Renderer(void);
 
-	void static render(HWND hWnd, Hook hook, vector<Mineral> minerals);
+	void static render(HWND hWnd, Hook hook, vector<Mineral> minerals, int timeLeft, int score);
 };
