@@ -17,6 +17,7 @@ Hook::Hook(double x, double y)
 	this->angle = DEFAULT_ANGLE;
 	direction = 1;
 	hookState = Aiming;
+	mineral = NULL;
 }
 
 double Hook::getX()
@@ -78,7 +79,7 @@ void Hook::calculatePosition()
 			mineral->setX(0);
 			mineral->setY(0);
 		}
-		if (x < 0 || y < 0) {
+		if ((x-x0)*(x-x0)+y*y < 2*LENGTH*LENGTH) {
 			hookState = Aiming;
 		}
 	}

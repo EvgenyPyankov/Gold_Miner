@@ -28,7 +28,7 @@ private:
 	int DEFAULT_ANGLE = 300;
 	int MIN_ANGLE = 190;
 	int MAX_ANGLE = 350;
-	double SPEED = 0.05;
+	double SPEED = 0.03;
 	double RADIUS = 0.01;
 	double LENGTH = 0.05;
 	double x0;

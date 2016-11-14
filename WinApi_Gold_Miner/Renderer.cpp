@@ -1,10 +1,15 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "Converter.h"
+#include <iostream>
 
 
 void Renderer::render(HWND hWnd, Hook hook, list<Mineral> minerals)
 {
+	//AllocConsole();
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
 	HBITMAP hScreen, oldBmp;
 	PAINTSTRUCT ps;
 	RECT rect;
@@ -21,9 +26,14 @@ void Renderer::render(HWND hWnd, Hook hook, list<Mineral> minerals)
 	FillRect(cdc, &ps.rcPaint, brush);
 
 	
-
 	for (Mineral mineral : minerals) {
-		drawMineral(cdc, mineral);			
+		//int buf = mineral.getX();
+		//char buffer[10];
+		//snprintf(buffer, sizeof(buffer), "%g", buf);
+		//TextOut(cdc, 10, 10, &buffer, sizeof(buffer));
+		//std::cout << buf;
+		//printf(buffer);
+		drawMineral(cdc, mineral);		
 	}
 
 	HPEN hLinePen = CreatePen(PS_SOLID, 7, RGB(0, 0, 0));

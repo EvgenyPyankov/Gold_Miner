@@ -31,6 +31,7 @@ int hookTimer;
 Hook hook;
 Levels currentLevel;
 list<Mineral> minerals;
+Mineral* mineral;
 
 
 void init(HWND hWnd)
@@ -40,6 +41,7 @@ void init(HWND hWnd)
 	hook = Hook(0.5, 0.0);
 	renderTimer = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
 	hookTimer = SetTimer(hWnd, HOOK_TIMER, 30, NULL);
+	mineral = NULL;
 
 }
 
@@ -128,6 +130,8 @@ Mineral* detectCollision()
 		double x = xHook - mineral.getX();
 		double y = yHook - mineral.getY();
 		if ((x*x + y*y) < mineral.getR()*mineral.getR()) {
+			//Mineral* ptr = &mineral;
+			//return ptr;
 			return &mineral;
 		}
 
@@ -150,12 +154,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		case HOOK_TIMER:
 			hook.calculatePosition();
-		
+				if (mineral == NULL)
+				{
+					mineral = detectCollision();
+					if (mineral != NULL) {
+						mineral->setX(1);
+						//minerals.remove(*mineral);
+						//(*mineral).setX(0);
+						//Mineral min = *mineral;
+						//mineral->setX(0);
+						//mineral->setY(0);
+						//mineral->setX(0);
+						//mineral->setY(0);
+						hook.grabMineral(mineral);
+						//KillTimer(hWnd, hookTimer);
+				}
 				//hook.hookState = Backward;
-				Mineral* mineral = detectCollision();
-				if (mineral != NULL) {
-					hook.grabMineral(mineral);
-					//KillTimer(hWnd, hookTimer);
+				
+				
 				}
 				
 			return 0;
@@ -218,7 +234,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
-// Обработчик сообщений для окна "О программе".
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
