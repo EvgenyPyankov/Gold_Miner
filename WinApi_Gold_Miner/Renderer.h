@@ -2,6 +2,7 @@
 #include "Hook.h"
 #include "Mineral.h"
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -15,5 +16,5 @@ private:
 public:
 	Renderer(void);
 
-	void static render(HWND hWnd, Hook hook, list<Mineral> minerals);
+	void static render(HWND hWnd, Hook hook, vector<Mineral> minerals);
 };

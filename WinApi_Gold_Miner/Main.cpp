@@ -23,15 +23,15 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-Mineral* detectCollision();
+int detectCollision();
 
 int timeOut = 30;
 int renderTimer;
 int hookTimer;
 Hook hook;
 Levels currentLevel;
-list<Mineral> minerals;
-Mineral* mineral;
+vector<Mineral> minerals;
+int mineral;
 
 
 void init(HWND hWnd)
@@ -41,7 +41,7 @@ void init(HWND hWnd)
 	hook = Hook(0.5, 0.0);
 	renderTimer = SetTimer(hWnd, RENDER_TIMER, timeOut, NULL);
 	hookTimer = SetTimer(hWnd, HOOK_TIMER, 30, NULL);
-	mineral = NULL;
+	mineral = -1;
 
 }
 
@@ -122,21 +122,30 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-Mineral* detectCollision()
+int detectCollision()
 {
 	double xHook = hook.getX();
 	double yHook = hook.getY();
-	for (Mineral mineral : minerals) {
-		double x = xHook - mineral.getX();
-		double y = yHook - mineral.getY();
-		if ((x*x + y*y) < mineral.getR()*mineral.getR()) {
+	//for (Mineral mineral : minerals) {
+	//	double x = xHook - mineral.getX();
+	//	double y = yHook - mineral.getY();
+	//	if ((x*x + y*y) < mineral.getR()*mineral.getR()) {
+	//		//Mineral* ptr = &mineral;
+	//		//return ptr;
+	//		return ;
+	//	}
+	for (int i=0; i<minerals.size(); i++)
+	{
+		double x = xHook - minerals[i].getX();
+		double y = yHook - minerals[i].getY();
+		if ((x*x + y*y) < minerals[i].getR()*minerals[i].getR()) {
 			//Mineral* ptr = &mineral;
 			//return ptr;
-			return &mineral;
-		}
+			return i;
+	}
 
 	}
-	return NULL;
+	return -1;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -154,25 +163,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		case HOOK_TIMER:
 			hook.calculatePosition();
-				if (mineral == NULL)
-				{
-					mineral = detectCollision();
-					if (mineral != NULL) {
-						mineral->setX(1);
-						//minerals.remove(*mineral);
-						//(*mineral).setX(0);
-						//Mineral min = *mineral;
-						//mineral->setX(0);
-						//mineral->setY(0);
-						//mineral->setX(0);
-						//mineral->setY(0);
-						hook.grabMineral(mineral);
-						//KillTimer(hWnd, hookTimer);
+			if (mineral>=0)
+			{
+				minerals[mineral].setX(hook.getX());
+				minerals[mineral].setY(hook.getY());
+				if (hook.getHookState() == Aiming) {
+					minerals.erase(minerals.begin() + mineral);
+					mineral = -1;
 				}
-				//hook.hookState = Backward;
-				
-				
+					
+			}
+			else
+			{
+				mineral = detectCollision();
+				if (mineral >= 0) {
+					hook.grabMineral();
 				}
+			}
+			
 				
 			return 0;
 

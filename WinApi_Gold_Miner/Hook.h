@@ -16,7 +16,7 @@ public:
 	void calculatePosition();
 	HookStates getHookState();
 	void pullHook();
-	void grabMineral(Mineral* mineral);
+	void grabMineral();
 
 	//void setX(double x);
 	//void setY(double y);

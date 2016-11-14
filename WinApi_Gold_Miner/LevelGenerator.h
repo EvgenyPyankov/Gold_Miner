@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "Mineral.h"
 #include <list>
+#include <vector>
 
 using namespace Constants;
 using namespace std;
@@ -9,6 +10,6 @@ using namespace std;
 class LevelGenerator
 {
 public:
-	static list<Mineral> getMinerals(Levels level);
+	static vector<Mineral> getMinerals(Levels level);
 
 };

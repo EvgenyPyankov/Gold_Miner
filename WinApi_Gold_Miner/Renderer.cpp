@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-void Renderer::render(HWND hWnd, Hook hook, list<Mineral> minerals)
+void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals)
 {
 	//AllocConsole();
 	freopen("CONIN$", "r", stdin);

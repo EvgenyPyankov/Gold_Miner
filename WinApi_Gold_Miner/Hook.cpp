@@ -35,9 +35,9 @@ double Hook::getRadius()
 	return RADIUS;
 }
 
-void Hook::grabMineral(Mineral* mineral)
+void Hook::grabMineral()
 {
-	this->mineral = mineral;
+	//this->mineral = mineral;
 	hookState = Backward;
 }
 
