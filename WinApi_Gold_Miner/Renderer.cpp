@@ -6,10 +6,6 @@
 
 void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals, int timeLeft, int score)
 {
-	//AllocConsole();
-	freopen("CONIN$", "r", stdin);
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONOUT$", "w", stderr);
 	HBITMAP hScreen, oldBmp;
 	PAINTSTRUCT ps;
 	RECT rect;
@@ -22,17 +18,11 @@ void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals, int timeLe
 	hScreen = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
 	oldBmp = (HBITMAP)SelectObject(cdc, hScreen);
 
-	HBRUSH brush = CreateSolidBrush(RGB(40, 200, 80));
+	HBRUSH brush = CreateSolidBrush(BCKGRND_COLOR);
 	FillRect(cdc, &ps.rcPaint, brush);
 
 	drawInfo(cdc, timeLeft, score);
 	for (Mineral mineral : minerals) {
-		//int buf = mineral.getX();
-		//char buffer[10];
-		//snprintf(buffer, sizeof(buffer), "%g", buf);
-		//TextOut(cdc, 10, 10, &buffer, sizeof(buffer));
-		//std::cout << buf;
-		//printf(buffer);
 		drawMineral(cdc, mineral);		
 	}
 
@@ -55,19 +45,19 @@ void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals, int timeLe
 	EndPaint(hWnd, &ps);
 }
 
-//[]WCHAR Renderer::convertToText(int number)
-//{
-//	WCHAR  buffer[100];
-//	wsprintf(buffer, TEXT("vaue = %d"), number);
-//	return buffer;
-//}
+WCHAR* Renderer::convertToText(int number)
+{
+	WCHAR  buffer[100];
+	wsprintf(buffer, TEXT("vaue = %d"), number);
+	return buffer;
+}
 
 
 void Renderer::drawNumber(HDC hdc, double x, double y, int number)
 {
 	int x0 = Converter::getX(x);
 	int y0 = Converter::getY(y);
-	WCHAR  buffer[100];
+	wchar_t  buffer[100];
 	wsprintf(buffer, TEXT("vaue = %d"), number);
 	TextOut(hdc, x0, y0, buffer, lstrlen(buffer));
 
@@ -76,31 +66,38 @@ void Renderer::drawNumber(HDC hdc, double x, double y, int number)
 
 void Renderer::drawInfo(HDC hdc, int timeLeft, int score)
 {
-	/*WCHAR  hah[100];
-	wsprintf(hah, TEXT("vaue = %d"), score);
-	TextOut(hdc, 0.01, 0.01, hah, lstrlen(hah));*/
-	drawNumber(hdc, 0.01, 0.01, timeLeft);
-	drawNumber(hdc, 0.01, 0.05, score);
+	int x0 = Converter::getX(0.01);
+	int y0 = Converter::getY(0.01);
+	wchar_t  buffer[100];
+	wsprintf(buffer, TEXT("Time left: %d"), timeLeft);
+	TextOut(hdc, x0, y0, buffer, lstrlen(buffer));
+	x0 = Converter::getX(0.01);
+	y0 = Converter::getY(0.05);
+	wsprintf(buffer, TEXT("Score: %d"), score);
+	TextOut(hdc, x0, y0, buffer, lstrlen(buffer));
 }
 
 
 void Renderer::drawHook(HDC hdc, Hook hook)
 {
-	HPEN hPen = CreatePen(PS_SOLID, 1, NULL);
-	SelectObject(hdc, hPen);
+	HBRUSH brush = CreateSolidBrush(hook.getColor());
+	SelectObject(hdc, brush);
 	int radius = Converter::getLength(hook.getRadius());
 	int x = Converter::getX(hook.getX())-radius;
 	int y = Converter::getY(hook.getY())- radius;
 	Ellipse(hdc, x, y, x + radius*2, y +radius*2);
-	DeleteObject(hPen);
+	DeleteObject(brush);
 }
 
 void Renderer::drawMineral(HDC hdc, Mineral mineral)
 {
+	HBRUSH brush = CreateSolidBrush(colors.at(mineral.getType()));
 	int radius = Converter::getLength(mineral.getR());
 	int x = Converter::getX(mineral.getX())-radius;
 	int y = Converter::getY(mineral.getY()) - radius;
+	SelectObject(hdc, brush);
 	Ellipse(hdc, x, y, x + radius*2, y + radius*2);
+	DeleteObject(brush);
 }
 
 

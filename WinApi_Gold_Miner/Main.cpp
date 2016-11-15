@@ -24,6 +24,9 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 int detectCollision();
+void processLevelTimer(HWND hWnd);
+void finishLevel(HWND hWnd);
+TCHAR * getGameResultText();
 
 int timeOut = 30;
 int renderTimer;
@@ -35,6 +38,7 @@ vector<Mineral> minerals;
 int mineral;
 int timeLeft;
 int score;
+int maxScore;
 
 
 void init(HWND hWnd)
@@ -48,6 +52,11 @@ void init(HWND hWnd)
 	mineral = -1;
 	timeLeft = LEVEL_TIME;
 	score = 0;
+	maxScore = 0;
+	for (Mineral mineral:minerals)
+	{
+		maxScore += mineralValues.at(mineral.getType());
+	}
 
 }
 
@@ -112,7 +121,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // —охранить дескриптор экземпл€ра в глобальной переменной
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,
 	   CW_USEDEFAULT, CW_USEDEFAULT, WIDTH, HEIGHT, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
@@ -154,6 +163,35 @@ int detectCollision()
 	return -1;
 }
 
+TCHAR * getGameResultText()
+{
+	double tmp = (double)score / maxScore;
+	if (tmp > 0.9) 
+		return winMessage;
+	return loseMessage;
+}
+
+void finishLevel(HWND hWnd)
+{
+	KillTimer(hWnd, renderTimer);
+	KillTimer(hWnd, hookTimer);
+	KillTimer(hWnd, levelTimer);
+	TCHAR *resultText = getGameResultText();
+	MessageBox(NULL,
+		resultText,
+		_T("Game over"),
+		NULL);
+	init(hWnd);
+}
+
+void processLevelTimer(HWND hWnd)
+{
+	if (timeLeft == 0)
+		finishLevel(hWnd);
+	else
+		timeLeft--;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -166,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, false);
 			return 0;
 		case LEVEL_TIMER:
-			timeLeft--;
+			processLevelTimer(hWnd);
 			return 0;
 		case HOOK_TIMER:
 			hook.calculatePosition();
@@ -175,6 +213,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				minerals[mineral].setX(hook.getX());
 				minerals[mineral].setY(hook.getY());
 				if (hook.getHookState() == Aiming) {
+					score += mineralValues.at(minerals[mineral].getType());
 					minerals.erase(minerals.begin() + mineral);
 					mineral = -1;
 				}
@@ -184,7 +223,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				mineral = detectCollision();
 				if (mineral >= 0) {
-					hook.grabMineral();
+					hook.grabMineral(minerals[mineral].getType());
 				}
 			}
 			
@@ -218,18 +257,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
 		switch (wParam) {
-		case VK_SPACE:
-
-			break;
-		case VK_LEFT:
-
-			break;
-		case VK_RIGHT:
-
-			break;
-		case VK_UP:
-
-			break;
 		case VK_DOWN:
 			hook.pullHook();
 			break;

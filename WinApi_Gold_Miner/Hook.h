@@ -16,7 +16,8 @@ public:
 	void calculatePosition();
 	HookStates getHookState();
 	void pullHook();
-	void grabMineral();
+	void grabMineral(MineralTypes mineral);
+	COLORREF getColor();
 
 	//void setX(double x);
 	//void setY(double y);
@@ -24,12 +25,13 @@ public:
 
 private:
 	int direction;
+	COLORREF COLOR = RGB(255, 255, 255);
 	double ANGLE_STEP = 2.5;
 	int DEFAULT_ANGLE = 300;
 	int MIN_ANGLE = 190;
 	int MAX_ANGLE = 350;
 	double SPEED = 0.03;
-	double RADIUS = 0.01;
+	double RADIUS = 0.007;
 	double LENGTH = 0.05;
 	double x0;
 	double y0;
@@ -38,7 +40,7 @@ private:
 	double angle;
 	HookStates hookState;
 	void calculate(double c);
-	Mineral* mineral;
+	MineralTypes mineral;
 };
 
 #pragma once

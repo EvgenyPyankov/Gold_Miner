@@ -14,7 +14,7 @@ private:
 	void static drawMineral(HDC hdc, Mineral mineral);
 	void static drawInfo(HDC hdc, int timeLeft, int score);
 	void static drawNumber(HDC hdc, double x, double y, int number);
-	//WCHAR static convertToText(int number);
+	static WCHAR* convertToText(int number);
 
 public:
 	Renderer(void);

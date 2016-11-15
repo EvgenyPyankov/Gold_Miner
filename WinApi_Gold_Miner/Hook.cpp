@@ -17,7 +17,7 @@ Hook::Hook(double x, double y)
 	this->angle = DEFAULT_ANGLE;
 	direction = 1;
 	hookState = Aiming;
-	mineral = NULL;
+	mineral = Void;
 }
 
 double Hook::getX()
@@ -35,9 +35,15 @@ double Hook::getRadius()
 	return RADIUS;
 }
 
-void Hook::grabMineral()
+COLORREF Hook::getColor()
 {
-	//this->mineral = mineral;
+	return COLOR;
+}
+
+
+void Hook::grabMineral(MineralTypes mineral)
+{
+	this->mineral = mineral;
 	hookState = Backward;
 }
 
@@ -67,20 +73,18 @@ void Hook::calculatePosition()
 	break;
 	case Forward:
 	{
-		calculate(SPEED);
+		calculate(speeds.at(Void));
 		if (x > 1 || x<0 || y>1 || y < 0)
 			hookState = Backward;
 	}
 	break;
 	case Backward:
 	{
-		calculate(SPEED);
-		if (mineral != NULL){
-			mineral->setX(0);
-			mineral->setY(0);
-		}
+		calculate(speeds.at(mineral));
+		
 		if ((x-x0)*(x-x0)+y*y < 2*LENGTH*LENGTH) {
 			hookState = Aiming;
+			mineral = Void;
 		}
 	}
 	break;
