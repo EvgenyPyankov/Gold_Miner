@@ -5,7 +5,6 @@
 #include "Mineral.h"
 #include "LevelGenerator.h"
 #include "Constants.h"
-#include "Converter.h"
 #include "Hook.h"
 #include <list>
 
@@ -18,7 +17,6 @@ HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING];                 
 WCHAR szWindowClass[MAX_LOADSTRING];            
 
-// ќтправить объ€влени€ функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -27,6 +25,7 @@ int detectCollision();
 void processLevelTimer(HWND hWnd);
 void finishLevel(HWND hWnd);
 TCHAR * getGameResultText();
+void processHookTimer();
 
 int timeOut = 30;
 int renderTimer;
@@ -81,8 +80,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-
-
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -94,7 +91,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
 
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
@@ -119,7 +115,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // —охранить дескриптор экземпл€ра в глобальной переменной
+   hInst = hInstance; 
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,
 	   CW_USEDEFAULT, CW_USEDEFAULT, WIDTH, HEIGHT, nullptr, nullptr, hInstance, nullptr);
@@ -141,24 +137,13 @@ int detectCollision()
 {
 	double xHook = hook.getX();
 	double yHook = hook.getY();
-	//for (Mineral mineral : minerals) {
-	//	double x = xHook - mineral.getX();
-	//	double y = yHook - mineral.getY();
-	//	if ((x*x + y*y) < mineral.getR()*mineral.getR()) {
-	//		//Mineral* ptr = &mineral;
-	//		//return ptr;
-	//		return ;
-	//	}
 	for (int i=0; i<minerals.size(); i++)
 	{
 		double x = xHook - minerals[i].getX();
 		double y = yHook - minerals[i].getY();
 		if ((x*x + y*y) < minerals[i].getR()*minerals[i].getR()) {
-			//Mineral* ptr = &mineral;
-			//return ptr;
 			return i;
 	}
-
 	}
 	return -1;
 }
@@ -192,6 +177,29 @@ void processLevelTimer(HWND hWnd)
 		timeLeft--;
 }
 
+void processHookTimer()
+{
+	hook.calculatePosition();
+	if (mineral >= 0)
+	{
+		minerals[mineral].setX(hook.getX());
+		minerals[mineral].setY(hook.getY());
+		if (hook.getHookState() == Aiming) {
+			score += mineralValues.at(minerals[mineral].getType());
+			minerals.erase(minerals.begin() + mineral);
+			mineral = -1;
+		}
+
+	}
+	else
+	{
+		mineral = detectCollision();
+		if (mineral >= 0) {
+			hook.grabMineral(minerals[mineral].getType());
+		}
+	}
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -207,27 +215,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			processLevelTimer(hWnd);
 			return 0;
 		case HOOK_TIMER:
-			hook.calculatePosition();
-			if (mineral>=0)
-			{
-				minerals[mineral].setX(hook.getX());
-				minerals[mineral].setY(hook.getY());
-				if (hook.getHookState() == Aiming) {
-					score += mineralValues.at(minerals[mineral].getType());
-					minerals.erase(minerals.begin() + mineral);
-					mineral = -1;
-				}
-					
-			}
-			else
-			{
-				mineral = detectCollision();
-				if (mineral >= 0) {
-					hook.grabMineral(minerals[mineral].getType());
-				}
-			}
-			
-				
+			processHookTimer();
 			return 0;
 
 		}

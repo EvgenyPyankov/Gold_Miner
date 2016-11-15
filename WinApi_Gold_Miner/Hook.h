@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Constants.h"
-#include "Mineral.h"
 
 using namespace Constants;
 
@@ -18,9 +17,6 @@ public:
 	void pullHook();
 	void grabMineral(MineralTypes mineral);
 	COLORREF getColor();
-
-	//void setX(double x);
-	//void setY(double y);
 
 
 private:

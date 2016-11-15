@@ -1,7 +1,6 @@
 #pragma once
 #include "Constants.h"
 #include "Mineral.h"
-#include <list>
 #include <vector>
 
 using namespace Constants;

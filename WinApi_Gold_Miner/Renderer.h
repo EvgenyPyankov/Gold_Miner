@@ -1,7 +1,6 @@
 #pragma once
 #include "Hook.h"
 #include "Mineral.h"
-#include <list>
 #include <vector>
 
 using namespace std;

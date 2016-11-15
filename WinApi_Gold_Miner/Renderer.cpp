@@ -35,7 +35,6 @@ void Renderer::render(HWND hWnd, Hook hook, vector<Mineral> minerals, int timeLe
 
 	drawHook(cdc, hook);
 
-	// копирование из буфера в видимый контекст
 	BitBlt(hdc, 0, 0, rect.right, rect.bottom, cdc, 0, 0, SRCCOPY);
 
 	SelectObject(cdc, oldBmp);

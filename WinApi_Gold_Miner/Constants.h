@@ -57,8 +57,8 @@ namespace Constants {
 	};
 
 	const map<MineralTypes, double> speeds = {
-		{ Boulder, 0.005 },
-		{ Gold, 0.005},
+		{ Boulder, 0.002 },
+		{ Gold, 0.002},
 		{ SmallBoulder, 0.008 },
 		{ SmallGold, 0.008 },
 		{ Diamond, 0.03 },
@@ -78,6 +78,5 @@ namespace Constants {
 
 	static TCHAR winMessage[] = _T("You won!");
 	static TCHAR loseMessage[] = _T("You lost!");
-	
 
 }
